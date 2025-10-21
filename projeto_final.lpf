@@ -7,6 +7,24 @@ LOCATE COMP "clk" SITE "P3";
 IOBUF PORT "clk" IO_TYPE=LVCMOS33;
 FREQUENCY PORT "clk" 25.0 MHz;
 
+# --- Entrada do Sensor ---
+LOCATE COMP "sensor" SITE "C3";
+IOBUF PORT "sensor" IO_TYPE=LVCMOS33 PULLMODE=DOWN;
+
+# --- Saída do LED Vermelho ---
+LOCATE COMP "led" SITE "B4";
+IOBUF PORT "led" IO_TYPE=LVCMOS33 DRIVE=8;
+
+# --- Saídas para o Motor de Passo ---
+LOCATE COMP "pino_in1" SITE "D3";
+LOCATE COMP "pino_in2" SITE "C17";
+LOCATE COMP "pino_in3" SITE "B18";
+LOCATE COMP "pino_in4" SITE "B20";
+IOBUF PORT "pino_in1" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
+IOBUF PORT "pino_in2" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
+IOBUF PORT "pino_in3" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
+IOBUF PORT "pino_in4" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
+
 # --- Reset (opcional) ---
 # Se for usar um botão de reset, descomente a linha abaixo e coloque o pino
 # LOCATE COMP "reset" SITE "PINO_RESET";
@@ -15,7 +33,7 @@ FREQUENCY PORT "clk" 25.0 MHz;
 # --- Saídas para o Display 7 Segmentos ---
 # POR FAVOR, SUBSTITUA PINO_A, PINO_B, etc., pelos pinos corretos!
 LOCATE COMP "seg_a" SITE "D1";
-LOCATE COMP "seg_b" SITE "C1";
+LOCATE COMP "seg_b" SITE "A3";
 LOCATE COMP "seg_c" SITE "C2";
 LOCATE COMP "seg_d" SITE "E3";
 LOCATE COMP "seg_e" SITE "E2";
