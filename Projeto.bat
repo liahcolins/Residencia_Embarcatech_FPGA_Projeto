@@ -1,14 +1,13 @@
 @echo off
 set OSSCAD=C:\OSS-CAD-SUITE
-set TOP=teste_display_top
-set LPF=teste_display.lpf
+set TOP=motor_controle
+set LPF=projeto_final.lpf
 
 call "%OSSCAD%\environment.bat"
 cd %~dp0
 
 echo [1/4] Synth
-yosys -p "read_verilog -sv teste_display_top.sv display_7seg.sv; synth_ecp5 -top teste_display_top -json teste_display_top.json"
-
+yosys -p "read_verilog -sv motor_controle.sv ; synth_ecp5 -top motor_controle -json motor_controle.json"
 echo [2/4] 
 nextpnr-ecp5 --json "%TOP%.json" --textcfg "%TOP%.config" --lpf "%LPF%" --45k --package CABGA381 --speed 6
 
