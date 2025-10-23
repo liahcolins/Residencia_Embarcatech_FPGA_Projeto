@@ -1,39 +1,45 @@
-// motor_controle.sv (Versão Corrigida com Portas Individuais)
+// motor_controle.sv (Versão Final com Buzzer)
 module motor_controle (
     input  logic clk,             // Clock do sistema (25 MHz)
     input  logic sensor,          // Saída do TCRT5000 (1 = objeto detectado)
 
-    // --- Portas de Saída Corrigidas para corresponder ao .lpf ---
-    output logic led,    // Pino B4
-    output logic pino_in1,        // Pino D3
-    output logic pino_in2,        // Pino C17
-    output logic pino_in3,        // Pino B18
-    output logic pino_in4,        // Pino B20
-    output logic seg_a,           // Pino D1
-    output logic seg_b,           // Pino C1
-    output logic seg_c,           // Pino C2
-    output logic seg_d,           // Pino E3
-    output logic seg_e,           // Pino E2
-    output logic seg_f,           // Pino D2
-    output logic seg_g            // Pino B1
+    // --- Portas de Saída ---
+    output logic led_red,led_green,
+    output logic pino_buzzer,     // <<< NOVO
+    output logic pino_in1,
+    output logic pino_in2,
+    output logic pino_in3,
+    output logic pino_in4,
+    output logic seg_a,
+    output logic seg_b,
+    output logic seg_c,
+    output logic seg_d,
+    output logic seg_e,
+    output logic seg_f,
+    output logic seg_g
 );
 
     //=========================
     // Parâmetros de controle
     //=========================
     localparam CLK_FREQ_HZ = 25_000_000;
-    localparam TEMPO_MOTOR = 10;           // 10 segundos de operação
-    localparam integer VELOCIDADE_HZ = 1000;  // 800 passos/segundo
+    localparam TEMPO_MOTOR = 10;
+    localparam integer VELOCIDADE_HZ = 1000;
     localparam integer CONTAGEM_VELOCIDADE = CLK_FREQ_HZ / VELOCIDADE_HZ;
     localparam DEBOUNCE_MS  = 20;
     localparam DEBOUNCE_MAX = (CLK_FREQ_HZ / 1000) * DEBOUNCE_MS;
     localparam DEBOUNCE_BITS = $clog2(DEBOUNCE_MAX);
 
+    // --- (NOVO) Parâmetros do Buzzer ---
+    localparam TOM_FREQ_HZ = 2000; // 1kHz para o tom
+    localparam TOM_MEIO_PERIODO = CLK_FREQ_HZ / (TOM_FREQ_HZ * 2);
+    localparam PULSO_FREQ_HZ = 1; // 1Hz para piscar (0.5s ligado, 0.5s desligado)
+    localparam PULSO_MEIO_PERIODO = CLK_FREQ_HZ / (PULSO_FREQ_HZ * 2);
+
     //=========================
     // Contadores e estados
     //=========================
     typedef enum logic [1:0] { IDLE, CONTANDO, MOTOR_ON } state_t;
-
     state_t state = IDLE, next_state = IDLE;
     logic [2:0] cont_objetos = 0;
     logic [31:0] tempo_motor = 0;
@@ -43,6 +49,12 @@ module motor_controle (
     logic sensor_filtrado = 0;
     logic sensor_antigo_filtrado = 0;
     logic pulso_limpo;
+
+    // --- (NOVO) Sinais do Buzzer ---
+    logic [$clog2(TOM_MEIO_PERIODO)-1:0] tom_cnt = 0;
+    logic tom_onda = 0;
+    logic [$clog2(PULSO_MEIO_PERIODO)-1:0] pulso_cnt = 0;
+    logic pulso_onda = 0;
 
     //=========================
     // Lógica de Debounce
@@ -77,6 +89,29 @@ module motor_controle (
         passos[5] = 4'b0011;
         passos[6] = 4'b0001;
         passos[7] = 4'b1001;
+    end
+
+    //=========================
+    // (NOVO) Geradores de Onda para o Buzzer
+    //=========================
+    // Gerador de Tom (1 kHz)
+    always_ff @(posedge clk) begin
+        if (tom_cnt == TOM_MEIO_PERIODO - 1) begin
+            tom_cnt <= 0;
+            tom_onda <= ~tom_onda;
+        end else begin
+            tom_cnt <= tom_cnt + 1;
+        end
+    end
+
+    // Gerador de Pulso (1 Hz)
+    always_ff @(posedge clk) begin
+        if (pulso_cnt == PULSO_MEIO_PERIODO - 1) begin
+            pulso_cnt <= 0;
+            pulso_onda <= ~pulso_onda;
+        end else begin
+            pulso_cnt <= pulso_cnt + 1;
+        end
     end
 
     //=========================
@@ -132,29 +167,29 @@ module motor_controle (
     end
 
     //=========================
-    // Saídas (Corrigidas para portas individuais)
+    // Saídas
     //=========================
     
-    // --- Saída do LED ---
-    // (O nome 'led' foi mudado para 'led')
-    assign led = (state == MOTOR_ON);
+    // --- Saída do LED (Ânodo Comum: 0 = LIGA) ---
+    assign led_red   = (state == MOTOR_ON);
+    assign led_green = ~(state == MOTOR_ON);
+
+    // --- (NOVO) Saída do Buzzer ---
+    // Toca o tom de 1kHz, piscando a 1Hz, somente quando o motor está ligado.
+    assign pino_buzzer = tom_onda & pulso_onda & (state == MOTOR_ON);
 
     // --- Saídas do Motor ---
-    // (O vetor 'motor[3:0]' foi dividido em 'pino_in1' a 'pino_in4')
     logic [3:0] padrao_motor;
     assign padrao_motor = (state == MOTOR_ON) ? passos[passo_idx] : 4'b0000;
     
-    assign pino_in1 = padrao_motor[3]; // Bit 3 -> pino_in1
-    assign pino_in2 = padrao_motor[2]; // Bit 2 -> pino_in2
-    assign pino_in3 = padrao_motor[1]; // Bit 1 -> pino_in3
-    assign pino_in4 = padrao_motor[0]; // Bit 0 -> pino_in4
+    assign pino_in1 = padrao_motor[3];
+    assign pino_in2 = padrao_motor[2];
+    assign pino_in3 = padrao_motor[1];
+    assign pino_in4 = padrao_motor[0];
 
-    // --- Saídas do Display 7 Segmentos ---
-    // (O vetor 'seg[6:0]' foi dividido em 'seg_a' a 'seg_g')
-    logic [6:0] seg_vetor; // Vetor interno {g,f,e,d,c,b,a}
-
+    // --- Saídas do Display 7 Segmentos (Ânodo Comum: 0 = LIGA) ---
+    logic [6:0] seg_vetor;
     always_comb begin
-        // Ânodo Comum (0 = liga)
         case (cont_objetos)
             0: seg_vetor = 7'b1000000; // 0
             1: seg_vetor = 7'b1111001; // 1
@@ -166,8 +201,6 @@ module motor_controle (
         endcase
     end
 
-    // Mapeamento dos bits do vetor para as saídas individuais
-    // Assumindo que o bit 0 é 'a' e o bit 6 é 'g'
     assign seg_a = seg_vetor[0];
     assign seg_b = seg_vetor[1];
     assign seg_c = seg_vetor[2];
