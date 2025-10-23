@@ -12,8 +12,14 @@ LOCATE COMP "sensor" SITE "C3";
 IOBUF PORT "sensor" IO_TYPE=LVCMOS33 PULLMODE=DOWN;
 
 # --- Saída do LED Vermelho ---
-LOCATE COMP "led" SITE "B4";
-IOBUF PORT "led" IO_TYPE=LVCMOS33 DRIVE=8;
+LOCATE COMP "led_red" SITE "B4";
+IOBUF PORT "led_red" IO_TYPE=LVCMOS33 DRIVE=8;
+LOCATE COMP "led_green" SITE "F20";
+IOBUF PORT "led_green" IO_TYPE=LVCMOS33 DRIVE=8;
+
+# --- (NOVO) Saída para o Buzzer ---
+LOCATE COMP "pino_buzzer" SITE "D20"; # <-- Exemplo de pino, mude se necessário
+IOBUF PORT "pino_buzzer" IO_TYPE=LVCMOS33 DRIVE=8;
 
 # --- Saídas para o Motor de Passo ---
 LOCATE COMP "pino_in1" SITE "D3";
@@ -34,7 +40,7 @@ IOBUF PORT "pino_in4" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
 # POR FAVOR, SUBSTITUA PINO_A, PINO_B, etc., pelos pinos corretos!
 LOCATE COMP "seg_a" SITE "D1";
 LOCATE COMP "seg_b" SITE "A3";
-LOCATE COMP "seg_c" SITE "C2";
+LOCATE COMP "seg_c" SITE "C4";
 LOCATE COMP "seg_d" SITE "E3";
 LOCATE COMP "seg_e" SITE "E2";
 LOCATE COMP "seg_f" SITE "D2";
