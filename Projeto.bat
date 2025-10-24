@@ -15,5 +15,6 @@ echo [3/4] Pack
 ecppack --compress "%TOP%.config" "%TOP%.bit"
 
 echo [4/4] Program (RAM)
-openFPGALoader -b colorlight-i9 "%TOP%.bit"
+::openFPGALoader -b colorlight-i9 "%TOP%.bit"
+openFPGALoader -b colorlight-i9 --unprotect-flash -f --verify "%TOP%.bit"
 echo === DONE ===
