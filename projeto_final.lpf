@@ -1,4 +1,4 @@
-# Arquivo de pinagem para o teste do display de 7 segmentos
+# Arquivo de pinagem para o projeto
 # Placa: Colorlight i9 (LFE5U-45F)
 
 # --- Clock ---
@@ -11,14 +11,14 @@ FREQUENCY PORT "clk" 25.0 MHz;
 LOCATE COMP "sensor" SITE "C3";
 IOBUF PORT "sensor" IO_TYPE=LVCMOS33 PULLMODE=DOWN;
 
-# --- Saída do LED Vermelho ---
+# --- Saída do LED ---
 LOCATE COMP "led_red" SITE "B4";
 IOBUF PORT "led_red" IO_TYPE=LVCMOS33 DRIVE=8;
 LOCATE COMP "led_green" SITE "F20";
 IOBUF PORT "led_green" IO_TYPE=LVCMOS33 DRIVE=8;
 
 # --- (NOVO) Saída para o Buzzer ---
-LOCATE COMP "pino_buzzer" SITE "D20"; # <-- Exemplo de pino, mude se necessário
+LOCATE COMP "pino_buzzer" SITE "D20";
 IOBUF PORT "pino_buzzer" IO_TYPE=LVCMOS33 DRIVE=8;
 
 # --- Saídas para o Motor de Passo ---
@@ -30,11 +30,6 @@ IOBUF PORT "pino_in1" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
 IOBUF PORT "pino_in2" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
 IOBUF PORT "pino_in3" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
 IOBUF PORT "pino_in4" IO_TYPE=LVCMOS33 DRIVE=8 SLEWRATE=FAST;
-
-# --- Reset (opcional) ---
-# Se for usar um botão de reset, descomente a linha abaixo e coloque o pino
-# LOCATE COMP "reset" SITE "PINO_RESET";
-# IOBUF PORT "reset" IO_TYPE=LVCMOS33 PULLMODE=DOWN;
 
 # --- Saídas para o Display 7 Segmentos ---
 # POR FAVOR, SUBSTITUA PINO_A, PINO_B, etc., pelos pinos corretos!
