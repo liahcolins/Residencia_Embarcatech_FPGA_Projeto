@@ -1,4 +1,4 @@
-# Contador de Peças com Acionamento Temporizado — FPGA (SystemVerilog)
+# Contador de Peças com Acionamento Temporizado — FPGA
 
 Com esta equipe competente, desenvolvemos uma **esteira automatizada** controlada por FPGA, utilizando **SystemVerilog** para toda a lógica de hardware.  
 O sistema detecta peças por meio do sensor infravermelho **TCRT5000**, conta até **5 unidades** e, então, aciona um **motor de passo 28BYJ-48** (via driver ULN2003) por **10 segundos**.  
